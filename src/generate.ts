@@ -12,7 +12,7 @@ export const generate = async ({
   schemas,
   defaultDatabase,
   dbDir,
-  pglite = false,
+  pglite,
   migrationsDir,
 }: Pick<Context, "schemas" | "defaultDatabase" | "dbDir"> & {
   pglite?: boolean
@@ -20,8 +20,9 @@ export const generate = async ({
 }) => {
   dbDir = dbDir ?? "./src/db"
   migrationsDir = migrationsDir ?? path.join(dbDir, "migrations")
+  const usePglite = pglite ?? (!process.env.DATABASE_URL && !process.env.POSTGRES_HOST)
 
-  if (pglite) {
+  if (usePglite) {
     const { PGlite } = await import("@electric-sql/pglite")
     const { fromNodeSocket } = await import("pg-gateway/node")
     const net = await import("node:net")
